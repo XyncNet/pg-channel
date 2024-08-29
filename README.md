@@ -4,6 +4,8 @@
 Generates PL/pgSQL script creating LISTEN/NOTIFY channels from just table name and dict of update triggers with fields sets.
 
 Function `plsql` takes one requiered `:str` arg - table_name, and generates PL/pgSQL script for creating 3 channels for 3 type events:
+
+### Examples
 ###### On table: Fire `tables_new`: on create entity in `table`, `tables_del`: on delete entity from `table`, and `tables_upd`: on update any `table.field`:
 ```python
 plsql('table')

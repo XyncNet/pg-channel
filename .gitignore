@@ -1,4 +1,7 @@
 /.idea
+/venv
 # Ignore cache directories
 __pycache__/
 **/__pycache__/
+/dist
+*.egg-info
