@@ -1,3 +1,5 @@
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+
 # Postgres channels
 Generates PL/pgSQL script creating LISTEN/NOTIFY channels from just table name and dict of update triggers with fields sets.
 

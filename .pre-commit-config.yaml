@@ -1,0 +1,11 @@
+repos:
+- repo: local
+  hooks:
+  - id: pytest
+    name: pytest
+    entry: pytest
+#    exclude: ^migrations
+    language: system
+    types: [python]
+    pass_filenames: false
+    always_run: true
