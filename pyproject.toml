@@ -25,8 +25,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mixartemev/pg-channels"
-Repository = "https://github.com/mixartemev/pg-channels"
+Homepage = "https://github.com/XyncNet/pg-channel"
+Repository = "https://github.com/XyncNet/pg-channel"
 
 [tool.setuptools]
 packages = ["pg_channel"]
