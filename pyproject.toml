@@ -1,13 +1,6 @@
-[build-system]
-requires = ["setuptools>=64", "setuptools-scm[toml]>=8"]
-build-backend = "setuptools.build_meta"
-[tool.setuptools_scm]
-version_scheme = "python-simplified-semver" # if "feature" in `branch_name` SEMVER_MINOR++ else SEMVER_PATCH++
-local_scheme = "no-local-version"
-
 [project]
-name = "x_pg_channels"
-requires-python = ">=3.11"
+name = "pg-channel"
+requires-python = ">=3.12"
 authors = [
     {name = "Mike Artemiev", email = "mixartemev@gmail.com"},
 ]
@@ -15,6 +8,13 @@ description = "Generates PL/pgSQL script creating LISTEN/NOTIFY channels"
 readme = "README.md"
 license = {text = "MIT"}
 dynamic = ["version"]
+
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm[toml]>=8"]
+build-backend = "setuptools.build_meta"
+[tool.setuptools_scm]
+version_scheme = "python-simplified-semver" # if "feature" in `branch_name` SEMVER_MINOR++ else SEMVER_PATCH++
+local_scheme = "no-local-version"
 
 [project.optional-dependencies]
 dev = [
@@ -27,6 +27,9 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/mixartemev/pg-channels"
 Repository = "https://github.com/mixartemev/pg-channels"
+
+[tool.setuptools]
+packages = ["pg_channel"]
 
 [tool.ruff]
 line-length = 120

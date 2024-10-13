@@ -1,4 +1,4 @@
-from x_pg_channels import plsql
+from pg_channel import plsql
 
 
 def test_updates_params():
