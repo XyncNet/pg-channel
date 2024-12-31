@@ -1,6 +1,15 @@
+from enum import IntEnum
+
+
+class Act(IntEnum):
+    DEL = 1
+    NEW = 2
+    UPD = 4
+
+
 def plsql(table: str, ops: int = 7, updates: dict[str, tuple | list] = None):
     def send(chnl, rtrns):
-        return f"PERFORM pg_notify('{chnl}', {rtrns});"
+        return f"PERFORM pg_notify('{chnl}', {rtrns})"
 
     rtrn_all = "row_to_json(NEW)::varchar"
     if updates:
@@ -20,8 +29,8 @@ def plsql(table: str, ops: int = 7, updates: dict[str, tuple | list] = None):
         upd = "\n\t".join(conds) + "\n\tEND IF;"
     else:
         upd = send(table + "s_upd", rtrn_all)
-    fns: dict[int, str] = {
-        4: f"""
+    fns: dict[Act, str] = {
+        Act.UPD: f"""
 CREATE OR REPLACE FUNCTION {table}_upd() returns trigger as ${table}_upd_trg$
 BEGIN
     {upd}
@@ -30,7 +39,7 @@ END
 ${table}_upd_trg$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER {table}_upd AFTER UPDATE ON "{table}" FOR EACH ROW EXECUTE FUNCTION {table}_upd();
 """,
-        2: f"""
+        Act.NEW: f"""
 CREATE OR REPLACE FUNCTION {table}_new() returns trigger as ${table}_new_trg$
 BEGIN
     PERFORM pg_notify('{table}s_new', row_to_json(NEW)::varchar);
@@ -39,7 +48,7 @@ END
 ${table}_new_trg$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER {table}_new AFTER INSERT ON "{table}" FOR EACH ROW EXECUTE FUNCTION {table}_new();
 """,
-        1: f"""
+        Act.DEL: f"""
 CREATE OR REPLACE FUNCTION {table}_del() returns trigger as ${table}_del_trg$
 BEGIN
     PERFORM pg_notify('{table}s_del', OLD.id::varchar);
