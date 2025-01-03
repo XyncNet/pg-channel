@@ -9,7 +9,7 @@ class Act(IntEnum):
 
 def plsql(table: str, ops: int = 7, updates: dict[str, tuple | list] = None):
     def send(chnl, rtrns):
-        return f"PERFORM pg_notify('{chnl}', {rtrns})"
+        return f"PERFORM pg_notify('{chnl}', {rtrns});"
 
     rtrn_all = "row_to_json(NEW)::varchar"
     if updates:
