@@ -11,7 +11,7 @@ def plsql(table: str, ops: int = 7, updates: dict[str, tuple | list] = None):
     def send(chnl, rtrns):
         return f"PERFORM pg_notify('{chnl}', {rtrns});"
 
-    rtrn_all = "row_to_json(NEW)::varchar"
+    rtrn_upd = "jsonb_build_array(NEW.id, diff)::varchar"
     if updates:
         conds = []
         for fset, fields in updates.items():
@@ -25,18 +25,25 @@ def plsql(table: str, ops: int = 7, updates: dict[str, tuple | list] = None):
             opr = "AND" if isinstance(fields, tuple) else "OR"
             channel = table + "s_upd_" + fset
             cond = f" {opr} ".join([f"OLD.{field}!=NEW.{field}" for field in fields])
-            conds.append(f"{prevendif}{els}IF {cond} THEN\n\t\t{send(channel, rtrn_all)}")
+            conds.append(f"{prevendif}{els}IF {cond} THEN\n\t\t{send(channel, rtrn_upd)}")
         upd = "\n\t".join(conds) + "\n\tEND IF;"
     else:
-        upd = send(table + "s_upd", rtrn_all)
+        upd = send(table + "s_upd", rtrn_upd)
     fns: dict[Act, str] = {
         Act.UPD: f"""
 CREATE OR REPLACE FUNCTION {table}_upd() returns trigger as ${table}_upd_trg$
-BEGIN
-    {upd}
-    RETURN NULL;
-END
-${table}_upd_trg$ LANGUAGE plpgsql;
+    DECLARE
+        diff jsonb;
+    BEGIN
+        SELECT jsonb_object_agg(key, jsonb_build_array(to_jsonb(OLD) -> key, value))
+        INTO diff
+        FROM jsonb_each(to_jsonb(NEW))
+        WHERE value IS DISTINCT FROM (to_jsonb(OLD) -> key);
+
+        {upd}
+        RETURN NULL;
+    END
+    ${table}_upd_trg$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER {table}_upd AFTER UPDATE ON "{table}" FOR EACH ROW EXECUTE FUNCTION {table}_upd();
 """,
         Act.NEW: f"""
