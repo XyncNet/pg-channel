@@ -40,6 +40,10 @@ CREATE OR REPLACE FUNCTION {table}_upd() returns trigger as ${table}_upd_trg$
         FROM jsonb_each(to_jsonb(NEW))
         WHERE value IS DISTINCT FROM (to_jsonb(OLD) -> key);
 
+        IF diff IS NULL THEN
+            RETURN NULL;
+        END IF;
+
         {upd}
         RETURN NULL;
     END
